@@ -25,12 +25,18 @@ func main() {
 	//o := h - b
 	//fmt.Println(o)
 
-	res := Minus(a, b, c, d, e, f, h, x)
-	res = Plus(a, b, c, d, e, f, h, x)
+	//res := Minus(a, b, c, d, e, f, h, x)
+	//res = Plus(a, b, c, d, e, f, h, x)
+	//
+	//res = Minus(a, x)
+	//fmt.Println(res)
+	//res = Plus(a, x)
+	//fmt.Println(res)
 
-	res = Minus(a, x)
+	res := Multip(a, b, c, d, e, f, h, x)
 	fmt.Println(res)
-	res = Plus(a, x)
+
+	res = Division(a, b, c, d, e, f, h, x)
 	fmt.Println(res)
 }
 
@@ -72,6 +78,30 @@ func plusMapValues(integer map[int]int64, decimal map[int]float64) (float64) {
 	return float64(i) + d
 }
 
+func Multip(args ...interface{}) (float64) {
+
+	numMap := cleanArgs(args...)
+	result := float64(1)
+	for _, num := range numMap {
+		result = result * num
+	}
+	return result
+}
+
+func Division(args ...interface{}) (float64) {
+	numMap := cleanArgs(args...)
+	result := numMap[0]
+	for i, num := range numMap {
+		if i == 0 {
+			continue
+		}
+
+		result = result / num
+	}
+	return result
+}
+
+//将参数分隔为整数部分和小数部分
 func extract(args ...interface{}) (map[int]int64, map[int]float64) {
 	integer := map[int]int64{}
 	decimal := map[int]float64{}
@@ -125,4 +155,55 @@ func extract(args ...interface{}) (map[int]int64, map[int]float64) {
 	}
 
 	return integer, decimal
+}
+
+//将参数中为字符串类型的数据转换成int或float
+func cleanArgs(args ...interface{}) (map[int]float64) {
+	num := map[int]float64{}
+
+	for i, arg := range args {
+		ty := reflect.TypeOf(arg).String()
+		switch ty {
+		case "string":
+			nums := strings.Split(arg.(string), ".")
+			if len(nums) > 2 || len(nums) < 1 {
+				err := fmt.Sprintf("args value is unvalid of th. %v :type is %v , value is %v", i, ty, arg)
+				panic(err)
+			}
+
+			if len(nums) == 2 {
+				res, err := strconv.ParseFloat(nums[0]+"."+nums[1], 64)
+				if err != nil {
+					panic(err)
+				}
+
+				num[i] = res
+			} else {
+				res, err := strconv.ParseFloat(nums[0], 64)
+				if err != nil {
+					panic(err)
+				}
+				num[i] = res
+			}
+
+		case "int", "int64":
+			if ty == "int" {
+				num[i] = float64(arg.(int))
+			} else {
+				num[i] = float64(arg.(int64))
+			}
+
+		case "float32", "float64":
+			if ty == "float32" {
+				num[i] = float64(arg.(float32))
+			} else {
+				num[i] = arg.(float64)
+			}
+		default:
+			err := fmt.Sprintf("args value is unvalid of th. %v :type is %v , value is %v", i, ty, arg)
+			panic(err)
+		}
+	}
+
+	return num
 }
