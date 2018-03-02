@@ -11,27 +11,33 @@ func main() {
 
 	a := "10"
 	b := 1
-	//c := "a"
 	c := "2"
 	d := "1.0"
 	e := 1.0
 	var f int64
 	f = 1.0
-	//g := []int{1}
 	var h float32
 	h = 3.1
 	x := int64(9)
 
+	res := Plus(a, b, c, d, e, f, h, x)
+	fmt.Println(res)
 
-	res := Multip(a, b, c, d, e, f, h, x)
+	res = Minus(a, b, c, d, e, f, h, x)
+	fmt.Println(res)
+
+	res = Multip(a, b, c, d, e, f, h, x)
 	fmt.Println(res)
 
 	res = Division(a, b, c, d, e, f, h, x)
 	fmt.Println(res)
 }
 
+//减法
 func Minus(args ...interface{}) (float64) {
 	integer, decimal := extract(args...)
+
+	//乘以-1后转化为加法
 	for k1, _ := range integer {
 		if k1 != 0 {
 			integer[k1] = integer[k1] * -1
@@ -48,39 +54,49 @@ func Minus(args ...interface{}) (float64) {
 
 }
 
+//加法
 func Plus(args ...interface{}) (float64) {
 	integer, decimal := extract(args...)
 	res := plusMapValues(integer, decimal)
 	return res
 }
 
+//加法运算的具体过程
 func plusMapValues(integer map[int]int64, decimal map[int]float64) (float64) {
 	var i int64
 	i = 0
 	var d float64
 	d = 0.0
+
+	//整数部分相加
 	for _, v1 := range integer {
 		i += v1
 	}
+
+	//小数部分相加
 	for _, v2 := range decimal {
 		d += v2
 	}
 	return float64(i) + d
 }
 
+//乘法
 func Multip(args ...interface{}) (float64) {
 
 	numMap := cleanArgs(args...)
 	result := float64(1)
+
+	//将每一项相乘
 	for _, num := range numMap {
 		result = result * num
 	}
 	return result
 }
 
+//除法
 func Division(args ...interface{}) (float64) {
 	numMap := cleanArgs(args...)
-	result := numMap[0]
+	result := numMap[0] //被除数
 	for i, num := range numMap {
 		if i == 0 {
 			continue
